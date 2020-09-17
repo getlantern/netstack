@@ -19,6 +19,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/getlantern/golog"
+	"github.com/getlantern/ops"
+
 	"github.com/google/netstack/rand"
 	"github.com/google/netstack/sleep"
 	"github.com/google/netstack/tcpip"
@@ -28,6 +31,10 @@ import (
 	"github.com/google/netstack/tcpip/seqnum"
 	"github.com/google/netstack/tcpip/stack"
 	"github.com/google/netstack/waiter"
+)
+
+var (
+	log = golog.LoggerFor("netstack.tcp")
 )
 
 // maxSegmentsPerWake is the maximum number of segments to process in the main
@@ -1086,6 +1093,16 @@ func (e *endpoint) disableKeepaliveTimer() {
 // goroutine and is responsible for sending segments and handling received
 // segments.
 func (e *endpoint) protocolMainLoop(handshake bool) *tcpip.Error {
+	op := ops.Begin("netstack_tcp_loop")
+	defer op.End()
+
+	defer func() {
+		p := recover()
+		if p != nil {
+			op.FailIf(log.Errorf("recovered from panic: %v", p))
+		}
+	}()
+
 	var closeTimer *time.Timer
 	var closeWaker sleep.Waker
 
