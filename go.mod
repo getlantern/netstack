@@ -3,7 +3,7 @@ module github.com/google/netstack
 go 1.14
 
 require (
-	github.com/getlantern/golog v0.0.0-20190830074920-4ef2e798c2d7
+	github.com/getlantern/golog v0.0.0-20200929154820-62107891371a
 	github.com/getlantern/ops v0.0.0-20200403153110-8476b16edcd6
 	github.com/google/btree v1.0.0
 	github.com/google/go-cmp v0.5.2
